@@ -8,7 +8,7 @@ repo_name: OpenNAS
 repo_url: https://github.com/longlonglink/OpenNAS
 
 docs_dir: docs
-site_dir: docs
+
 
 use_directory_urls: true
 
