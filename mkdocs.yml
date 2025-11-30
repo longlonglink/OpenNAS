@@ -103,7 +103,7 @@ markdown_extensions:
 # Page tree
 nav:
   - Home: index.md
-  - Project:intr
+  - Project:
     - Introduction: introduction/index.md
     - Hardware: hw/index.md
     - Firmware: rtl/index.md
