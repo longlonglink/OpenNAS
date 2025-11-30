@@ -1,47 +1,195 @@
 ---
-title: OpenNAS 项目介绍
+title: OpenNAS Project
+nav_order: 1
 ---
 
-# 重铸数字方舟：OpenNAS 开源项目
+# OpenNAS Open Source Project
 
-## 项目简介
+OpenNAS is a high-performance, low-power open-source Network Attached Storage (NAS) project based on FPGA. This project adopts a fully open-source design philosophy, with all code and design documents open to the community from hardware to software, from firmware to applications, dedicated to helping users regain sovereignty over their data.
 
-在数据呈指数级增长的今天，我们正站在互联网历史的十字路口。OpenNAS 是一个高性能、低功耗的开源网络附加存储（NAS）项目，旨在帮助用户重新掌控自己的数据主权。
+## Hardware
 
-这不是一台普通的存储设备，而是个人在数字世界的基础设施。
+### 1. Main Control Chip
 
-## 核心理念
+We have chosen the **Xilinx Zynq-7000 series FPGA** as the core processor, specifically the **XC7Z035-FFG900** model.
 
-### 1. 数据主权回归
-在公有云服务频发限速、审查和数据泄露的背景下，OpenNAS 提供了一个真正属于用户自己的存储解决方案：
-- 物理掌控数据，拒绝"隐私裸奔"
-- 没有后门，没有审查，我的数据我做主
+#### Why Choose FPGA?
 
-### 2. AI 时代的"隐私避难所"
-面对人工智能对数据的贪婪需求，OpenNAS 成为您的数字"法拉第笼"：
-- 支持本地运行私有化小型模型
-- 让 AI 为您服务，而非成为数据"燃料"
+- **Customizability**: The hardware-programmable nature of FPGA allows us to deeply optimize for storage and networking applications
+- **High Performance**: Through hardware acceleration, I/O performance far exceeding traditional ARM or x86 processors can be achieved
+- **Low Power Consumption**: Compared to general-purpose processors with equivalent performance, FPGA consumes less power in specific application scenarios
+- **Open Source Friendly**: FPGA designs can be developed and verified using open-source toolchains
 
-### 3. 打破商业壁垒
-我们采用高性能硬件和开源设计，打破传统厂商"低配高价"的行业潜规则：
-- 高性能硬件开源普惠
-- 极致的硬件堆料 vs 开放的代码
+#### Technical Specifications
 
-### 4. 迎接 Web 3.0 时代
-OpenNAS 不仅是存储器，更是个人多媒体发布平台：
-- 去中心化的内容发布中心
-- 摆脱平台流量算法束缚
+- **Logic Cells**: XC7Z035 provides 275K logic cells, sufficient to implement complex storage and network protocol stacks
+- **ARM Dual-Core Cortex-A9**: Runs Linux operating system and upper-layer applications
+- **DDR3 Controller**: Supports high-speed memory access
+- **PCIe Interface**: Used to connect NVMe storage devices
 
-### 5. 极致能效比
-在追求高性能的同时，注重绿色计算：
-- 优化的底层代码和硬件选型
-- 实现极致的 Performance per Watt
-- 支持离线或弱网环境下的低功耗运行
+### 2. Network Interface (SFP+)
 
-## 技术特点
+OpenNAS provides **4× 10Gbps Ethernet interfaces** through SFP+ optical modules for high-speed network connectivity.
 
-- 高性能硬件架构
-- 低功耗优化设计
-- 开源透明的软件栈
-- 支持多种存储协议
-- 易于扩展和定制
+#### Design Features
+
+- **10Gbps Bandwidth**: Each interface supports 10Gbps full-duplex communication, with total bandwidth up to 40Gbps
+- **SFP+ Interface**: Supports various optical modules and direct-attach copper cables, flexibly adapting to different network environments
+- **Hardware Acceleration**: Network protocol processing is implemented in FPGA hardware, reducing CPU load
+- **Low Latency**: Hardware-implemented network stack can achieve microsecond-level latency
+
+#### Application Scenarios
+
+- High-speed file transfer and backup
+- Media content distribution
+
+### 3. Storage Interface (NVMe)
+
+OpenNAS achieves direct access to NVMe solid-state drives through **PCIe soft core**.
+
+#### Technical Implementation
+
+- **PCIe Soft Core**: Implements PCIe protocol stack using Xilinx GT (Gigabit Transceiver) and RTL code
+- **NVMe Protocol Support**: Complete NVMe 1.4 protocol implementation, supporting advanced features such as multi-queue and namespaces
+- **Multi-Drive Support**: Can connect multiple NVMe SSDs simultaneously, enabling RAID or independent storage pools
+- **High Performance**: Direct hardware access, avoiding overhead from traditional storage stacks
+
+#### Performance Advantages
+
+- **Low Latency**: Hardware-implemented PCIe and NVMe protocol stacks, latency can be as low as microsecond level
+- **High Throughput**: Fully utilizes the parallel performance of NVMe SSDs
+- **Scalable**: Can support more storage devices through PCIe expansion
+
+#### Open Source Design
+
+- **RTL Code Open Source**: All PCIe and NVMe related RTL code is completely open source
+- **Customizable**: Community can modify and optimize storage protocol implementation according to needs
+- **Transparency**: Users can fully understand how data is stored and accessed
+
+## Software
+
+### System Architecture
+
+OpenNAS software stack adopts a layered design, from bottom to top including:
+
+#### 1. Operating System Layer
+
+- **Linux Kernel**: Based on mainline Linux kernel, optimized for storage and network applications
+- **Device Drivers**: Provides complete driver support for FPGA hardware
+- **Resource Management**: Efficient CPU, memory, and I/O resource scheduling
+
+#### 2. Storage Management Layer
+
+- **File Systems**: Supports various modern file systems (ZFS, Btrfs, etc.)
+- **Storage Pool Management**: Flexible storage pool configuration and management
+- **Data Protection**: RAID, snapshots, backup, and other data protection mechanisms
+- **Performance Optimization**: Intelligent caching, read-ahead, write merging, and other optimization strategies
+
+#### 3. Network Service Layer
+
+- **File Sharing Protocols**: Supports mainstream protocols such as SMB, NFS, FTP, SFTP
+- **Web Management Interface**: Modern Web UI for convenient remote management
+- **Security Authentication**: Complete user permission management and access control
+
+#### 4. Application Service Layer
+
+- **Media Servers**: Supports Plex, Jellyfin, and other media servers
+- **Cloud Sync**: Supports Nextcloud, ownCloud, and other private cloud solutions
+- **Container Support**: Docker containerized application deployment
+- **Web 3.0 Applications**: Decentralized storage and content publishing features
+
+### Web 3.0 Features
+
+OpenNAS is not just a storage device, but also a personal multimedia publishing platform:
+
+- **Decentralized Content Publishing**: Supports decentralized protocols such as IPFS and ActivityPub
+- **Content Sovereignty**: Users have complete control over their content and data
+- **Freedom from Platform Constraints**: No dependency on centralized platforms, freely publish and share content
+- **Privacy Protection**: Content stored locally, users decide sharing scope
+
+### Open Source Ecosystem
+
+- **Fully Open Source**: All software code is released under open source licenses
+- **Community Driven**: Welcomes community contributions of code and features
+- **Comprehensive Documentation**: Provides detailed technical documentation and development guides
+- **Easy to Extend**: Modular design, convenient to add new features
+
+## Firmware
+
+### TCP Offload Engine (TOE)
+
+OpenNAS implements a **TCP Offload Engine (TOE)** in FPGA, transferring TCP protocol processing from CPU to hardware, significantly improving network performance.
+
+#### Technical Advantages
+
+- **CPU Offload**: TCP protocol stack implemented in FPGA hardware, freeing CPU resources for other tasks
+- **Low Latency**: Hardware-implemented TCP processing with much lower latency than software implementation
+- **High Throughput**: Can easily achieve 10Gbps line-rate forwarding
+- **Low Power Consumption**: Dedicated hardware is more energy-efficient than general-purpose CPU for network protocol processing
+
+#### Implementation Features
+
+- **Complete TCP/IP Protocol Stack**: Supports TCP, UDP, ICMP, and other protocols
+- **Connection Management**: Supports large numbers of concurrent connections
+- **Traffic Control**: Hardware-implemented congestion control and traffic shaping
+- **Security Features**: Supports IPsec, TLS offload, and other security acceleration
+
+### Other Firmware Features
+
+#### 1. Storage Acceleration
+
+- **NVMe Queue Management**: Hardware-implemented command queues and completion queues
+- **DMA Engine**: Efficient data transfer mechanism
+- **Cache Management**: Intelligent read/write caching strategies
+
+#### 2. Network Acceleration
+
+- **Packet Processing**: Hardware-implemented packet classification, filtering, and forwarding
+- **Load Balancing**: Load balancing across multiple network interfaces
+- **QoS Guarantee**: Quality of service guarantee mechanisms
+
+#### 3. Energy Efficiency Optimization
+
+- **Thermal Management**: Temperature monitoring and dynamic adjust fan speed
+
+### Open Source Firmware
+
+- **RTL Code Fully Open Source**: All FPGA firmware code is open source
+- **Development Toolchain**: Currently using Vivado, with plans to support open-source FPGA toolchains (such as Yosys, nextpnr) in the future
+- **Simulation and Verification**: Provides complete test platforms and verification environments
+- **Documentation and Tutorials**: Detailed firmware development documentation
+
+## Project Goals
+
+### Technical Goals
+
+- **High Performance**: Achieve 10Gbps network throughput and microsecond-level latency
+- **Low Power Consumption**: Power consumption more than 50% lower than traditional solutions at equivalent performance
+- **High Reliability**: 7×24 hours stable operation, zero data loss
+- **Ease of Use**: Ready to use out of the box, simple configuration
+
+### Open Source Goals
+
+- **Complete Transparency**: Hardware, software, and firmware all open source
+- **Community Collaboration**: Welcomes global developers to participate and contribute
+- **Knowledge Sharing**: All design documents and technical details are public
+- **Continuous Improvement**: Constantly optimized and improved based on community feedback
+
+### Application Scenarios
+
+- **Personal Data Storage**: Home NAS, personal cloud storage
+- **Small Business Storage**: Small business file servers
+- **Media Center**: Home media servers, content distribution
+- **Development and Testing**: Developer test storage environments
+- **Edge Computing**: Storage and computing platforms for edge nodes
+
+## Contributing
+
+OpenNAS is a fully open-source project, and we welcome all forms of contributions:
+
+- **Code Contributions**: Hardware design, software development, firmware optimization
+- **Documentation Improvement**: Technical documentation, user manuals, tutorials
+- **Testing and Feedback**: Bug reports, performance testing, user experience
+- **Community Support**: Answering questions, helping new users, promoting the project
+
+Let's build a truly user-owned open-source storage solution together!
