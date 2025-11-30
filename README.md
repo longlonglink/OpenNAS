@@ -1,2 +1,13 @@
 # OpenNAS
-A OpenSource NAS project
+
+一个高性能、低功耗的开源网络附加存储（NAS）项目。
+
+## 项目简介
+
+OpenNAS 是一个旨在帮助用户重新掌控自己数据主权的开源 NAS 项目。在数据呈指数级增长的今天，我们正站在互联网历史的十字路口。OpenNAS 不是一台普通的存储设备，而是个人在数字世界的基础设施。
+
+## 文档
+
+详细的项目介绍和文档可以在我们的 [项目文档网站](https://longlonglink.github.io/OpenNAS/) 中找到。
+
+

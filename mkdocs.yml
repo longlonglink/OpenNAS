@@ -1,0 +1,111 @@
+# Project information
+site_name: OpenNAS
+site_description: 一个高性能、低功耗的开源网络附加存储（NAS）项目
+site_author: OpenNAS Team
+site_url: https://longlonglink.github.io/OpenNAS/docs
+
+repo_name: OpenNAS
+repo_url: https://github.com/longlonglink/OpenNAS
+
+docs_dir: docs
+site_dir: docs
+
+use_directory_urls: true
+
+# [UI]
+theme:
+  name: material
+  language: zh
+  # [切换日间模式和夜间模式]
+  palette:
+    # 日间模式
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: 切换至夜间模式
+    # 夜间模式
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: 切换至日间模式
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    # 使用 Tab 来进行分类
+    - navigation.tabs
+    # 返回顶部的按钮，在上滑时出现
+    - navigation.top
+    # 给每个 Tab 添加一个 index.md，且在点击 Tab 时打开
+    - navigation.indexes
+    # 打开 Tab 时左侧目录全部展开
+    - navigation.expand
+    # 搜索输入一些字母时推荐补全整个单词
+    - search.suggest
+    # 搜索的关键词文章加入高亮
+    - search.highlight
+    # 可以通过按钮复制代码
+    - content.code.copy
+    # 点击按钮跳转至 GitHub 修改 Markdown 源文件
+    - content.action.edit
+  icon:
+    # 添加 GitHub 仓库图标
+    repo: fontawesome/brands/github
+
+# [点击按钮跳转至 GitHub 修改 Markdown 源文件]
+edit_uri: edit/main/docs/
+
+# [bottom-left corner]
+# [版权说明]
+copyright: OpenNAS Team
+
+# [bottom-right corner]
+extra:
+  # [添加社交网络图标和链接]
+  social:
+    - name: GitHub | longlonglink
+      icon: fontawesome/brands/github
+      link: https://github.com/longlonglink
+
+# [Extensions]
+plugins:
+  # [搜索功能]
+  - search:
+      lang:
+        - zh
+        - en
+
+markdown_extensions:
+  # [给标题添加链接]
+  - toc:
+      permalink: true
+  # [代码语法高亮]
+  - pymdownx.highlight:
+      # 显示行号
+      linenums: true
+      # 显示编程语言名称
+      auto_title: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  # [Markdown 提示]
+  - admonition
+  - pymdownx.details
+  # [图片功能支持]
+  - attr_list
+  - md_in_html
+
+# Page tree
+nav:
+  - Home: index.md
+  - Project:
+    - Introduction: README.md
+    - Hardware: hw/index.md
+    - Firmware: rtl/index.md
+    - Software: sw/index.md
+  - Documentation: documentation/index.md
