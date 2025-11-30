@@ -1,6 +1,5 @@
 ---
 title: OpenNAS Project
-nav_order: 1
 ---
 
 # OpenNAS Open Source Project

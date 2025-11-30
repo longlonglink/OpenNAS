@@ -1,7 +1,5 @@
 ---
 title: OpenNAS 项目
-nav_order: 1
-permalink: /zh-cn/
 ---
 
 # OpenNAS 开源项目
