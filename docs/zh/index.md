@@ -2,6 +2,8 @@
 title: OpenNAS 项目介绍
 ---
 
+* **[Switch to English (切换至英文) → /](../index.html)**
+
 # 重铸数字方舟：OpenNAS 开源项目
 
 ## 项目简介

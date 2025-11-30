@@ -109,3 +109,11 @@ nav:
     - Firmware: rtl/index.md
     - Software: sw/index.md
   - Documentation: documentation/index.md
+  - 中文版 / Chinese:
+    - 首页: zh/index.md
+    - 项目:
+      - 介绍: zh/introduction/index.md
+      - 硬件: zh/hw/index.md
+      - 固件: zh/rtl/index.md
+      - 软件: zh/sw/index.md
+    - 文档: zh/documentation/index.md
