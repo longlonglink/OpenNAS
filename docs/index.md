@@ -19,10 +19,10 @@ Amidst public cloud services facing frequent throttling, censorship, and data le
 - Physical control over your data; reject "privacy exposure."
 - No backdoors, no censorship—my data, my rule.
 
-### 2. A 'Privacy Sanctuary' in the AI Age
-As Artificial Intelligence develops a voracious appetite for data, OpenNAS serves as your digital "Faraday cage":
-- Supports running private, small-scale models locally.
-- Ensures AI serves you, rather than you becoming AI's data "fuel."
+### 2. A Privacy Sanctuary in the AI Era
+Facing AI’s insatiable demand for data, OpenNAS becomes your digital vault:
+- Supports running private, small-form-factor models locally.
+- Lets AI serve you, instead of turning you into big tech’s data “fuel.”
 
 ### 3. Breaking Commercial Barriers
 We utilize high-performance hardware and an open-source design, shattering the industry's unspoken rule of "low-spec, high-price" practiced by traditional vendors:
@@ -38,7 +38,7 @@ OpenNAS is more than just storage; it's a personal multimedia publishing platfor
 While pursuing high performance, we emphasize green computing:
 - Optimized underlying code and hardware selection.
 - Achieving maximum **Performance per Watt**.
-- Supports low-power operation in offline or weak network environments.
+- Supports low-power operation under light load.
 
 ## Technical Features
 
