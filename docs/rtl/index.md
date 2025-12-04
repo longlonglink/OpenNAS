@@ -97,40 +97,7 @@ The TOE module provides the following main interfaces:
 
 #### 2. TCP State Machine
 
-The TCP state machine is implemented using SpinalHDL, providing type-safe state transitions:
 
-```scala
-// SpinalHDL example code
-object TcpState extends SpinalEnum {
-  val CLOSED, LISTEN, SYN_SENT, SYN_RECEIVED,
-      ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2,
-      CLOSE_WAIT, CLOSING, LAST_ACK, TIME_WAIT = newElement()
-}
-
-class TcpStateMachine extends Component {
-  val io = new Bundle {
-    val currentState = out(TcpState())
-    val tcpFlags = in Bits(8 bits)
-    val stateChange = out Bool()
-  }
-  
-  val state = Reg(TcpState()) init(TcpState.CLOSED)
-  
-  switch(state) {
-    is(TcpState.CLOSED) {
-      when(io.tcpFlags(1)) { // SYN
-        state := TcpState.SYN_SENT
-      }
-    }
-    is(TcpState.SYN_SENT) {
-      when(io.tcpFlags(1) && io.tcpFlags(4)) { // SYN+ACK
-        state := TcpState.ESTABLISHED
-      }
-    }
-    // ... other state transitions
-  }
-}
-```
 
 ### Performance Optimization
 
@@ -291,57 +258,10 @@ Temperature > 70°C:  Fan speed 100%
 
 ### SpinalHDL Code Example
 
-```scala
-import spinal.core._
-import spinal.lib._
-
-class ExampleModule extends Component {
-  val io = new Bundle {
-    val input = in UInt(8 bits)
-    val output = out UInt(8 bits)
-    val valid = out Bool()
-  }
-  
-  // Register
-  val reg = Reg(UInt(8 bits)) init(0)
-  
-  // Combinational logic
-  io.output := reg + io.input
-  io.valid := io.input > 0
-  
-  // Sequential logic
-  when(io.valid) {
-    reg := io.input
-  }
-}
-```
 
 ### Mixed Design
 
-Integrating Verilog IP cores in SpinalHDL:
 
-```scala
-class MixedDesign extends Component {
-  // SpinalHDL module
-  val spinalModule = new SpinalModule()
-  
-  // Verilog module (BlackBox)
-  val verilogIP = new BlackBox {
-    val io = new Bundle {
-      val clk = in Bool()
-      val rst = in Bool()
-      val data = in UInt(32 bits)
-      val result = out UInt(32 bits)
-    }
-    // Map to Verilog module
-    mapClockDomain(clockDomain, io.clk)
-  }
-  
-  // Connection
-  verilogIP.io.data := spinalModule.io.data
-  spinalModule.io.result := verilogIP.io.result
-}
-```
 
 ## References
 

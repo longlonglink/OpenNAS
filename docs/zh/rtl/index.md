@@ -97,40 +97,6 @@ TOE 模块提供以下主要接口：
 
 #### 2. TCP 状态机
 
-TCP 状态机使用 SpinalHDL 实现，提供类型安全的状态转换：
-
-```scala
-// SpinalHDL 示例代码
-object TcpState extends SpinalEnum {
-  val CLOSED, LISTEN, SYN_SENT, SYN_RECEIVED,
-      ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2,
-      CLOSE_WAIT, CLOSING, LAST_ACK, TIME_WAIT = newElement()
-}
-
-class TcpStateMachine extends Component {
-  val io = new Bundle {
-    val currentState = out(TcpState())
-    val tcpFlags = in Bits(8 bits)
-    val stateChange = out Bool()
-  }
-  
-  val state = Reg(TcpState()) init(TcpState.CLOSED)
-  
-  switch(state) {
-    is(TcpState.CLOSED) {
-      when(io.tcpFlags(1)) { // SYN
-        state := TcpState.SYN_SENT
-      }
-    }
-    is(TcpState.SYN_SENT) {
-      when(io.tcpFlags(1) && io.tcpFlags(4)) { // SYN+ACK
-        state := TcpState.ESTABLISHED
-      }
-    }
-    // ... 其他状态转换
-  }
-}
-```
 
 ### 性能优化
 
@@ -291,30 +257,7 @@ OpenNAS 使用 **XADC（Xilinx Analog-to-Digital Converter）** 读取温度，�
 
 ### SpinalHDL 代码示例
 
-```scala
-import spinal.core._
-import spinal.lib._
 
-class ExampleModule extends Component {
-  val io = new Bundle {
-    val input = in UInt(8 bits)
-    val output = out UInt(8 bits)
-    val valid = out Bool()
-  }
-  
-  // 寄存器
-  val reg = Reg(UInt(8 bits)) init(0)
-  
-  // 组合逻辑
-  io.output := reg + io.input
-  io.valid := io.input > 0
-  
-  // 时序逻辑
-  when(io.valid) {
-    reg := io.input
-  }
-}
-```
 
 ### 混合设计
 
