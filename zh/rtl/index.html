@@ -1,0 +1,2094 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="一个高性能、低功耗的开源网络附加存储（NAS）项目">
+      
+      
+        <meta name="author" content="OpenNAS Team">
+      
+      
+        <link rel="canonical" href="https://longlonglink.github.io/OpenNAS/docs/zh/rtl/">
+      
+      
+        <link rel="prev" href="../hw/">
+      
+      
+        <link rel="next" href="../sw/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>固件实现 - OpenNAS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#opennas" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="OpenNAS" class="md-header__button md-logo" aria-label="OpenNAS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenNAS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              固件实现
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换至夜间模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换至夜间模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换至日间模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换至日间模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/longlonglink/OpenNAS" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OpenNAS
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../documentation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Documentation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  中文版 / Chinese
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenNAS" class="md-nav__button md-logo" aria-label="OpenNAS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenNAS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/longlonglink/OpenNAS" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OpenNAS
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../introduction/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rtl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Firmware
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中文版 / Chinese
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中文版 / Chinese
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../introduction/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    项目
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    固件
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    固件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概述
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spinalhdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么选择 SpinalHDL？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        开发环境
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="开发环境">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        工具链
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        环境配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tcp-toe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP 卸载引擎（TOE）实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TCP 卸载引擎（TOE）实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        架构设计
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="架构设计">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块划分
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现细节
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="实现细节">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 接口说明
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TCP 状态机
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        性能优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        存储实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="存储实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nvme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVMe 控制器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NVMe 控制器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pcie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCIe 软核实现
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvme_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVMe 队列管理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMA 引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网络加速实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="网络加速实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        负载均衡和故障转移
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        能效优化实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="能效优化实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        风扇曲线
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        仿真和验证
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="仿真和验证">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        验证方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        仿真工具
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        调试技巧
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        开发指南
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="开发指南">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spinalhdl_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpinalHDL 代码示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        混合设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考资料
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        贡献指南
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    软件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概述
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spinalhdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么选择 SpinalHDL？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        开发环境
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="开发环境">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        工具链
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        环境配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tcp-toe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP 卸载引擎（TOE）实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TCP 卸载引擎（TOE）实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        架构设计
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="架构设计">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模块划分
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现细节
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="实现细节">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 接口说明
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TCP 状态机
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        性能优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        存储实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="存储实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nvme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVMe 控制器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NVMe 控制器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pcie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PCIe 软核实现
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvme_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVMe 队列管理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMA 引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网络加速实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="网络加速实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        负载均衡和故障转移
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        能效优化实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="能效优化实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        风扇曲线
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        仿真和验证
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="仿真和验证">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        验证方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        仿真工具
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        调试技巧
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        开发指南
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="开发指南">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spinalhdl_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpinalHDL 代码示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        混合设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考资料
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        贡献指南
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/longlonglink/OpenNAS/edit/main/docs/zh/rtl/index.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="opennas">OpenNAS 固件实现指南<a class="headerlink" href="#opennas" title="Permanent link">&para;</a></h1>
+<p>本文档详细介绍 OpenNAS 项目中 FPGA 固件的实现方法，包括 TCP 卸载引擎（TOE）、存储实现、网络加速和能效优化等核心功能。</p>
+<h2 id="_1">概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>OpenNAS 固件基于 Xilinx Zynq-7000 系列 FPGA（XC7Z035）实现，采用 <strong>Scala 基于 SpinalHDL 混合 Verilog</strong> 来编写 HDL 代码。这种混合设计方式结合了 SpinalHDL 的类型安全和高级抽象能力，以及 Verilog 的灵活性和兼容性，使得代码更加健壮和易于维护。固件设计遵循模块化、可扩展的原则，所有代码完全开源。</p>
+<h3 id="spinalhdl">为什么选择 SpinalHDL？<a class="headerlink" href="#spinalhdl" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>类型安全</strong>：Scala 的强类型系统可以在编译时捕获许多错误</li>
+<li><strong>高级抽象</strong>：SpinalHDL 提供了更高级的硬件描述抽象，减少代码量</li>
+<li><strong>可复用性</strong>：更好的模块化和代码复用</li>
+<li><strong>混合设计</strong>：可以无缝集成现有的 Verilog IP 核</li>
+</ul>
+<h2 id="_2">开发环境<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">工具链<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>主要工具</strong>：Xilinx Vivado（当前版本）</li>
+<li><strong>未来计划</strong>：支持开源工具链（Yosys + nextpnr）</li>
+<li><strong>仿真工具</strong>：XSim（Vivado 内置）、Verilator（开源仿真器）</li>
+<li><strong>版本控制</strong>：Git</li>
+<li><strong>构建工具</strong>：SBT（Scala Build Tool）</li>
+</ul>
+<h3 id="_4">环境配置<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><span class="c1"># 安装 Scala 和 SBT</span>
+</span><span id="__span-0-2"><span class="c1"># 安装 Vivado</span>
+</span><span id="__span-0-3"><span class="c1"># 配置环境变量</span>
+</span><span id="__span-0-4"><span class="nb">export</span><span class="w"> </span><span class="nv">VIVADO_HOME</span><span class="o">=</span>/path/to/vivado
+</span><span id="__span-0-5"><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$VIVADO_HOME</span>/bin
+</span></code></pre></div></td></tr></table></div>
+<h2 id="tcp-toe">TCP 卸载引擎（TOE）实现<a class="headerlink" href="#tcp-toe" title="Permanent link">&para;</a></h2>
+<h3 id="_5">架构设计<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>TOE 模块将 TCP/IP 协议栈从 CPU 卸载到 FPGA 硬件，实现高性能网络处理。该模块采用流水线设计，支持 10Gbps 线速处理。</p>
+<h4 id="_6">模块划分<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>MAC 层接口</strong></li>
+<li>10Gbps 以太网 MAC 接口</li>
+<li>支持 SFP+ 光模块</li>
+<li>自动协商和链路管理</li>
+<li>
+<p>支持 4 路独立网络接口</p>
+</li>
+<li>
+<p><strong>IP 层处理</strong></p>
+</li>
+<li>IPv4/IPv6 数据包解析</li>
+<li>IP 路由和转发</li>
+<li>分片和重组</li>
+<li>
+<p>支持多播和广播</p>
+</li>
+<li>
+<p><strong>TCP 层处理</strong></p>
+</li>
+<li>连接建立和拆除（三次握手、四次挥手）</li>
+<li>序列号和确认号管理</li>
+<li>流量控制和拥塞控制</li>
+<li>重传机制</li>
+<li>
+<p>支持大量并发连接（最多 64K）</p>
+</li>
+<li>
+<p><strong>应用层接口</strong></p>
+</li>
+<li>与 ARM CPU 的 AXI4 接口：用于控制平面通信和配置</li>
+<li>与 NVMe 模块的 AXI-Stream 接口：用于数据平面零拷贝传输</li>
+<li>零拷贝数据传输：数据直接在网络和存储间传输，不经过 CPU</li>
+<li>事件通知机制：通过中断或轮询方式通知 CPU</li>
+</ol>
+<h3 id="_7">实现细节<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<h4 id="1">1. 接口说明<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<p>TOE 模块提供以下主要接口：</p>
+<p><strong>与 ARM CPU 的 AXI4 接口</strong>：
+- <strong>AXI4-Lite 控制接口</strong>：用于配置 TOE 参数、查询连接状态等
+- <strong>AXI4 数据接口</strong>：用于少量控制数据的传输
+- <strong>中断接口</strong>：用于事件通知（如新连接建立、连接关闭等）</p>
+<p><strong>与 NVMe 模块的 AXI-Stream 接口</strong>：
+- <strong>接收数据流（RX）</strong>：从网络接收的数据直接通过 AXI-Stream 传输到 NVMe 模块
+- <strong>发送数据流（TX）</strong>：从 NVMe 模块读取的数据直接通过 AXI-Stream 传输到网络
+- <strong>流控制信号</strong>：<code>tready</code>、<code>tvalid</code>、<code>tlast</code> 等标准 AXI-Stream 信号
+- <strong>数据宽度</strong>：512-bit，匹配 NVMe 的数据宽度</p>
+<p><strong>网络接口</strong>：
+- <strong>4× 10Gbps SFP+ 接口</strong>：支持光模块和直连铜缆
+- <strong>MAC 层接口</strong>：与以太网 PHY 的接口</p>
+<p><strong>内部接口</strong>：
+- <strong>连接表接口</strong>：用于查找和管理 TCP 连接
+- <strong>缓冲区接口</strong>：用于数据包的临时存储</p>
+<h4 id="2-tcp">2. TCP 状态机<a class="headerlink" href="#2-tcp" title="Permanent link">&para;</a></h4>
+<h3 id="_8">性能优化<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>流水线设计</strong>：将数据包处理分为多个流水线阶段，提高吞吐量</li>
+<li><strong>并行处理</strong>：支持多路数据包同时处理，充分利用 FPGA 的并行性</li>
+<li><strong>零拷贝</strong>：数据直接在 FPGA 和内存间传输，不经过 CPU，降低延迟</li>
+<li><strong>硬件加速</strong>：TCP 校验和、IP 校验和等在硬件中计算</li>
+</ol>
+<h2 id="_9">存储实现<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<h3 id="nvme">NVMe 控制器<a class="headerlink" href="#nvme" title="Permanent link">&para;</a></h3>
+<h4 id="pcie">PCIe 软核实现<a class="headerlink" href="#pcie" title="Permanent link">&para;</a></h4>
+<p>PCIe 软核使用 Xilinx GT（Gigabit Transceiver）实现 PCIe 3.0 x4 接口。该实现包括：</p>
+<ul>
+<li><strong>PCIe 配置空间</strong>：实现标准的 PCIe 配置寄存器</li>
+<li><strong>TLP（Transaction Layer Packet）处理</strong>：处理 PCIe 事务层数据包</li>
+<li><strong>链路训练</strong>：自动协商链路速度和宽度</li>
+<li><strong>错误处理</strong>：CRC 校验、重传机制等</li>
+</ul>
+<p>PCIe 软核与 NVMe 控制器通过 AXI4 接口连接，实现高效的数据传输。</p>
+<h4 id="nvme_1">NVMe 队列管理<a class="headerlink" href="#nvme_1" title="Permanent link">&para;</a></h4>
+<p><strong>多队列并发</strong>是 NVMe 的核心特性之一。OpenNAS 实现了完整的 NVMe 多队列支持：</p>
+<p><strong>队列架构</strong>：
+- <strong>管理队列（Admin Queue）</strong>：1 个提交队列（SQ）和 1 个完成队列（CQ）
+- <strong>I/O 队列（I/O Queue）</strong>：最多支持 65535 个 I/O 队列对（每个队列对包含 1 个 SQ 和 1 个 CQ）
+- <strong>队列深度</strong>：每个队列支持最多 65536 个条目</p>
+<p><strong>并发处理</strong>：
+- <strong>并行队列处理</strong>：多个 I/O 队列可以同时处理命令
+- <strong>队列优先级</strong>：支持队列优先级调度
+- <strong>中断聚合</strong>：多个完成队列的中断可以聚合，减少 CPU 中断开销</p>
+<p><strong>实现特点</strong>：
+- 使用 SpinalHDL 实现类型安全的队列管理
+- 硬件实现的队列指针管理，避免软件开销
+- 支持 MSI/MSI-X 中断机制
+- 与 TOE 模块通过 AXI-Stream 接口直接连接，实现零拷贝</p>
+<h3 id="dma">DMA 引擎<a class="headerlink" href="#dma" title="Permanent link">&para;</a></h3>
+<p><strong>SGDMA（Scatter-Gather DMA）</strong>引擎实现高效的数据传输：</p>
+<p><strong>功能特性</strong>：
+- <strong>分散/聚集传输</strong>：支持非连续内存区域的传输
+- <strong>自动页边界处理</strong>：自动处理跨页边界的传输
+- <strong>多通道支持</strong>：支持多个独立的 DMA 通道
+- <strong>优先级调度</strong>：支持通道优先级调度</p>
+<p><strong>与 NVMe 的集成</strong>：
+- DMA 引擎直接与 NVMe 控制器连接
+- 支持 NVMe 的 PRP（Physical Region Page）和 SGL（Scatter-Gather List）描述符
+- 自动处理 NVMe 命令的数据传输</p>
+<p><strong>性能优化</strong>：
+- 使用 AXI4 突发传输，提高带宽利用率
+- 支持预取机制，减少延迟
+- 硬件实现的描述符链表遍历，减少 CPU 负载</p>
+<h2 id="_10">网络加速实现<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h3 id="_11">负载均衡和故障转移<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p>OpenNAS 提供 <strong>4 路 10Gbps 网络接口</strong>，支持多种聚合模式：</p>
+<p><strong>负载均衡模式</strong>：
+- <strong>轮询（Round-Robin）</strong>：按顺序将流量分配到各个接口
+- <strong>最少连接（Least Connections）</strong>：将新连接分配给连接数最少的接口
+- <strong>哈希（Hash）</strong>：根据源/目的 IP 和端口进行哈希，保证同一连接使用同一接口
+- <strong>加权轮询（Weighted Round-Robin）</strong>：根据接口权重分配流量</p>
+<p><strong>故障转移模式</strong>：
+- <strong>主备模式（Active-Standby）</strong>：一个主接口工作，其他接口作为备份
+- <strong>链路聚合（Link Aggregation）</strong>：多个接口聚合为一个逻辑接口，提高带宽和可靠性</p>
+<p><strong>应用场景</strong>：
+- <strong>双网口网卡直连</strong>：两个设备通过双网口直连，实现高带宽和冗余
+- <strong>多路径传输</strong>：利用多个网络路径提高总带宽
+- <strong>网络冗余</strong>：当某个接口故障时，自动切换到其他接口</p>
+<p><strong>实现细节</strong>：
+- 硬件实现的负载均衡算法，低延迟
+- 实时监控接口状态，快速故障检测
+- 支持 LACP（Link Aggregation Control Protocol）
+- 与 TOE 模块集成，实现透明的负载均衡</p>
+<h2 id="_12">能效优化实现<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<h3 id="_13">风扇曲线<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>OpenNAS 使用 <strong>XADC（Xilinx Analog-to-Digital Converter）</strong> 读取温度，并根据设置的风扇曲线控制风扇转速。</p>
+<p><strong>XADC 接口</strong>：
+- <strong>温度传感器</strong>：读取 FPGA 内部温度传感器
+- <strong>外部温度传感器</strong>：支持连接外部温度传感器（如 CPU、NVMe SSD 等）
+- <strong>12-bit ADC</strong>：高精度温度测量
+- <strong>采样频率</strong>：可配置的采样频率</p>
+<p><strong>风扇曲线配置</strong>：
+- <strong>多段线性曲线</strong>：支持配置多段线性风扇曲线
+- <strong>温度阈值</strong>：可配置多个温度阈值点
+- <strong>转速范围</strong>：支持 PWM 控制，转速范围 0-100%
+- <strong>平滑控制</strong>：使用 PID 控制器实现平滑的风扇转速调节</p>
+<p><strong>典型风扇曲线</strong>：
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-1-1">温度 &lt; 40°C:  风扇转速 20%
+</span><span id="__span-1-2">40°C - 50°C: 风扇转速 20% - 40%（线性）
+</span><span id="__span-1-3">50°C - 60°C: 风扇转速 40% - 60%（线性）
+</span><span id="__span-1-4">60°C - 70°C: 风扇转速 60% - 80%（线性）
+</span><span id="__span-1-5">温度 &gt; 70°C:  风扇转速 100%
+</span></code></pre></div></td></tr></table></div></p>
+<p><strong>实现方式</strong>：
+- 使用 SpinalHDL 实现温度监控模块
+- 硬件实现的 PID 控制器，响应快速
+- 支持通过 AXI4-Lite 接口配置风扇曲线参数
+- 实时温度监控和风扇控制，无需 CPU 干预</p>
+<p><strong>安全特性</strong>：
+- <strong>过温保护</strong>：当温度超过安全阈值时，自动提高风扇转速或降低工作频率
+- <strong>故障检测</strong>：检测风扇故障（如停转）并报警
+- <strong>温度历史记录</strong>：记录温度历史数据，用于分析和优化</p>
+<h2 id="_14">仿真和验证<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="_15">验证方法<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>单元测试</strong>：每个模块独立测试，使用 SpinalHDL 的测试框架</li>
+<li><strong>集成测试</strong>：模块间接口测试，验证数据流正确性</li>
+<li><strong>系统测试</strong>：完整功能测试，包括端到端的数据传输</li>
+<li><strong>性能测试</strong>：吞吐量、延迟测试，验证是否达到设计目标</li>
+</ol>
+<h3 id="_16">仿真工具<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<p><strong>XSim（Vivado Simulator）</strong>：
+- Vivado 内置仿真器
+- 支持 Verilog、VHDL、SystemVerilog
+- 与 Vivado 工具链无缝集成</p>
+<p><strong>Verilator</strong>：
+- 开源 Verilog 仿真器
+- 高性能，适合大规模仿真
+- 支持 SystemVerilog 子集</p>
+<h3 id="_17">调试技巧<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>ILA（Integrated Logic Analyzer）</strong>：使用 Vivado ILA 进行在线调试，实时查看信号波形</li>
+<li><strong>仿真波形</strong>：使用 XSim 或 Verilator 查看详细波形，分析时序问题</li>
+<li><strong>日志输出</strong>：在 SpinalHDL 代码中使用 <code>println</code> 输出调试信息</li>
+<li><strong>断言（Assertions）</strong>：使用 SystemVerilog 断言检查设计约束</li>
+</ol>
+<h2 id="_18">开发指南<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<h3 id="spinalhdl_1">SpinalHDL 代码示例<a class="headerlink" href="#spinalhdl_1" title="Permanent link">&para;</a></h3>
+<h3 id="_19">混合设计<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<p>在 SpinalHDL 中集成 Verilog IP 核：</p>
+<div class="language-scala highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Scala</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-2-1"><span class="k">class</span><span class="w"> </span><span class="nc">MixedDesign</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nc">Component</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-2"><span class="w">  </span><span class="c1">// SpinalHDL 模块</span>
+</span><span id="__span-2-3"><span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">spinalModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">SpinalModule</span><span class="p">()</span>
+</span><span id="__span-2-4">
+</span><span id="__span-2-5"><span class="w">  </span><span class="c1">// Verilog 模块（BlackBox）</span>
+</span><span id="__span-2-6"><span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">verilogIP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">BlackBox</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-7"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Bundle</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-8"><span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="n">clk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="nc">Bool</span><span class="p">()</span>
+</span><span id="__span-2-9"><span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="n">rst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="nc">Bool</span><span class="p">()</span>
+</span><span id="__span-2-10"><span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="nc">UInt</span><span class="p">(</span><span class="mi">32</span><span class="w"> </span><span class="n">bits</span><span class="p">)</span>
+</span><span id="__span-2-11"><span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="nc">UInt</span><span class="p">(</span><span class="mi">32</span><span class="w"> </span><span class="n">bits</span><span class="p">)</span>
+</span><span id="__span-2-12"><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-13"><span class="w">    </span><span class="c1">// 映射到 Verilog 模块</span>
+</span><span id="__span-2-14"><span class="w">    </span><span class="n">mapClockDomain</span><span class="p">(</span><span class="n">clockDomain</span><span class="p">,</span><span class="w"> </span><span class="n">io</span><span class="p">.</span><span class="n">clk</span><span class="p">)</span>
+</span><span id="__span-2-15"><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-16">
+</span><span id="__span-2-17"><span class="w">  </span><span class="c1">// 连接</span>
+</span><span id="__span-2-18"><span class="w">  </span><span class="n">verilogIP</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">data</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">spinalModule</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">data</span>
+</span><span id="__span-2-19"><span class="w">  </span><span class="n">spinalModule</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">verilogIP</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">result</span>
+</span><span id="__span-2-20"><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<h2 id="_20">参考资料<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://www.xilinx.com/products/silicon-devices/soc/zynq-7000.html">Xilinx Zynq-7000 技术文档</a></li>
+<li><a href="https://spinalhdl.github.io/SpinalDoc-RTD/">SpinalHDL 官方文档</a></li>
+<li><a href="https://pcisig.com/">PCIe 规范</a></li>
+<li><a href="https://nvmexpress.org/">NVMe 规范</a></li>
+<li><a href="https://tools.ietf.org/html/rfc793">TCP/IP 协议详解</a></li>
+<li><a href="https://developer.arm.com/documentation/ihi0022/latest/">AXI4 规范</a></li>
+</ul>
+<h2 id="_21">贡献指南<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h2>
+<p>欢迎贡献代码！请遵循以下步骤：</p>
+<ol>
+<li>Fork 项目</li>
+<li>创建功能分支</li>
+<li>编写代码和测试（使用 SpinalHDL 或 Verilog）</li>
+<li>确保代码通过所有测试</li>
+<li>提交 Pull Request</li>
+</ol>
+<p>更多信息请参考项目的贡献指南。</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      OpenNAS Team
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/longlonglink" target="_blank" rel="noopener" title="GitHub | longlonglink" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.indexes", "navigation.expand", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
