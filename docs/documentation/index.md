@@ -16,8 +16,9 @@ title: Documentation
 
 
 # PCB&SCH
-- [ZYNQ-7000 PDN](https://docs.amd.com/v/u/en-US/ds191-XC7Z030-XC7Z045-data-sheet)
+- [ZYNQ-7000 AC-DC](https://docs.amd.com/v/u/en-US/ds191-XC7Z030-XC7Z045-data-sheet)
 - [ZYNQ-7000 GT](https://docs.amd.com/v/u/en-US/ug476_7Series_Transceivers)
 - [ZYNQ-7000 PACAKGE](https://cdn.hackaday.io/files/19354828041536/ug865-Zynq-7000-Pkg-Pinout.pdf)
 - [POWER Estimator](https://docs.amd.com/r/en-US/ug440-xilinx-power-estimator/Navigating-Content-by-Design-Process)
 - [XPE Download](https://www.amd.com/en/products/adaptive-socs-and-fpgas/technologies/power-efficiency/power-estimator.html)
+- [ZYNQ PCB](https://docs.amd.com/v/u/en-US/ug933-Zynq-7000-PCB)

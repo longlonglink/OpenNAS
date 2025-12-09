@@ -2,7 +2,7 @@
 title: OpenNAS Project Introduction
 ---
 
-* **[Switch to Chinese (切换至中文) → /zh/](../zh)**
+* **[Switch to Chinese (切换至中文) → /zh/](../OpenNAS/zh)**
 
 # Forging the Digital Ark: The OpenNAS Open Source Project
 
