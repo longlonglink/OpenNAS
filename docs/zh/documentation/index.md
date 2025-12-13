@@ -13,8 +13,8 @@ title: 文档
 # Altera 选型表
 - [Agilex5-E](https://www.intel.com/content/www/us/en/content-details/743772/agilex-5-fpgas-and-socs-e-series-product-table.html)
 - [Agilex5-D](https://www.intel.com/content/www/us/en/content-details/744050/agilex-5-fpgas-and-socs-d-series-product-table.html)
-
-
+- [Agilex3](https://www.intel.com/content/www/us/en/content-details/833123/agilex-3-fpgas-and-socs-c-series-product-table.html)
+不推荐Agilex3，最多4个收发器。
 
 # PCB&SCH
 - [ZYNQ-7000 AC-DC](https://docs.amd.com/v/u/en-US/ds191-XC7Z030-XC7Z045-data-sheet)
